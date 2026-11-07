@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Тест за Радиолюбители - Клас 2 (КРС)</title>
+  <style>
+    :root {
+      --primary: #2C3E50;
+      --accent: #2980B9;
+      --success: #27AE60;
+      --danger: #C0392B;
+      --warning: #F39C12;
+      --bg: #F4F6F9;
+      --card-bg: #FFFFFF;
+      --text: #222222;
+      --border: #E1E8ED;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+    body { background-color: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
+
+    header {
+      background-color: var(--primary);
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    header h1 { font-size: 1.3rem; font-weight: 600; }
+    .timer { font-size: 1.1rem; font-weight: bold; color: #F1C40F; }
+
+    main { max-width: 900px; width: 95%; margin: 2rem auto; flex: 1; }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+      border: 1px solid var(--border);
+      margin-bottom: 1.5rem;
+    }
+
+    h2 { margin-bottom: 1rem; color: var(--primary); font-size: 1.5rem; }
+    p { margin-bottom: 1rem; line-height: 1.5; }
+
+    .mode-select {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin: 1.5rem 0;
+    }
+
+    .mode-option {
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .mode-option:hover { border-color: var(--accent); background: #F8FAFC; }
+    .mode-option.selected { border-color: var(--accent); background: #EBF5FB; }
+    .mode-option input { transform: scale(1.2); }
+
+    .btn {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 0.8rem 1.8rem;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn:hover { background: #1F618D; }
+    .btn-success { background: var(--success); }
+    .btn-success:hover { background: #1E8449; }
+    .btn-secondary { background: #7F8C8D; }
+    .btn-secondary:hover { background: #626567; }
+    .btn-outline { background: transparent; color: var(--primary); border: 2px solid var(--border); }
+    .btn-outline:hover { background: #EAECEE; }
+
+    .q-badge {
+      display: inline-block;
+      background: #EBF5FB;
+      color: var(--accent);
+      padding: 0.3rem 0.8rem;
+      border-radius: 15px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .q-text { font-size: 1.15rem; font-weight: 600; margin-bottom: 1.2rem; color: #111; }
+    .q-img { max-width: 100%; height: auto; border-radius: 6px; border: 1px solid var(--border); margin: 1rem 0; }
+
+    .options { display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1rem; }
+    .option-item {
+      padding: 0.45rem 0.2rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+      background: transparent;
+      font-size: 1.05rem;
+    }
+    .option-item:hover { background: #F2F4F4; }
+    .option-item input { width: 1.1rem; height: 1.1rem; accent-color: var(--accent); flex: 0 0 auto; }
+    .option-item.selected { background: #E8F8F5; font-weight: 600; }
+    .option-item.correct { background: #D4EFDF !important; color: #145A32; font-weight: bold; }
+    .option-item.wrong { background: #FADBD8 !important; color: #78281F; }
+
+    .nav-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 1.5rem; }
+
+    .results-banner {
+      text-align: center;
+      padding: 2rem;
+      border-radius: 10px;
+      color: white;
+      margin-bottom: 1.5rem;
+    }
+    .results-banner.pass { background: var(--success); }
+    .results-banner.fail { background: var(--danger); }
+    .results-banner h2 { color: white; font-size: 2rem; margin-bottom: 0.5rem; }
+    .results-banner p { font-size: 1.2rem; }
+
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(45px, 1fr));
+      gap: 0.5rem;
+      margin: 1rem 0;
+      max-height: 300px;
+      overflow-y: auto;
+      padding: 0.5rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+    }
+    .grid-btn {
+      aspect-ratio: 1;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      background: #EAECEE;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .grid-btn.answered { background: var(--success); color: white; border-color: var(--success); }
+    .grid-btn.flagged { background: var(--warning); color: white; border-color: var(--warning); }
+    .grid-btn.current { border: 2px solid var(--accent); transform: scale(1.1); }
+
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.5);
+      justify-content: center; align-items: center;
+      z-index: 1000;
+    }
+    .modal-content {
+      background: white;
+      padding: 2rem;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>📡 Радиолюбителски изпит — Клас 2</h1>
+  <div id="header-right">
+    <span class="timer" id="timer-display" style="display:none;">⏱ 00:00</span>
+  </div>
+</header>
+
+<main id="app">
+  <!-- Dynamic Content Injected Here -->
+</main>
+
+<div class="modal" id="grid-modal">
+  <div class="modal-content">
+    <h2>Карта на въпросите</h2>
+    <p>Натиснете въпрос, за да прескочите към него:</p>
+    <div class="grid-container" id="grid-boxes"></div>
+    <div style="text-align: right; margin-top: 1rem;">
+      <button class="btn btn-secondary" onclick="closeModal()">Затвори</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  let questionsData = [];
+  let testQuestions = [];
+  let userAnswers = {};
+  let flaggedQuestions = new Set();
+  let currentIndex = 0;
+  let timerInterval = null;
+  let secondsElapsed = 0;
+  let isReviewMode = false;
+  let reviewOnlyWrong = false;
+  let reviewIndices = [];
+  let reviewPos = 0;
+
+  async function init() {
+    try {
+      const res = await fetch('/api/questions');
+      questionsData = await res.json();
+      renderMainMenu();
+    } catch (e) {
+      document.getElementById('app').innerHTML = `<div class="card"><h2>Грешка</h2><p>Неуспешно зареждане на въпросите. Стартирайте extract_questions.py първо.</p></div>`;
+    }
+  }
+
+  function renderMainMenu() {
+    isReviewMode = false;
+    reviewOnlyWrong = false;
+    reviewIndices = [];
+    reviewPos = 0;
+    document.getElementById('timer-display').style.display = 'none';
+    clearInterval(timerInterval);
+
+    const html = `
+      <div class="card">
+        <h2>Подготовка за радиолюбителски изпит (Клас 2)</h2>
+        <p>Тестът съдържа официалните актуализирани въпроси от Комисията за регулиране на съобщенията (КРС).</p>
+
+        <div style="background: #EBF5FB; border-left: 4px solid var(--accent); padding: 1rem; border-radius: 4px; margin: 1rem 0;">
+          <strong>📋 Правила за изпита:</strong>
+          <ul style="margin-left: 1.5rem; margin-top: 0.5rem;">
+            <li>Изпитът съдържа <strong>60 въпроса</strong> (28 от Раздел 1, 13 от Раздел 2, 19 от Раздел 3).</li>
+            <li>За успех са необходими минимум <strong>80% верни отговора (поне 48 от 60)</strong>.</li>
+            <li>Всички верни отговори са скрити, а вариантите се разбъркват.</li>
+          </ul>
+        </div>
+
+        <h3 style="margin-top: 1.5rem; color: var(--primary);">Изберете режим:</h3>
+        <div class="mode-select">
+          <label class="mode-option selected">
+            <input type="radio" name="mode" value="official_60" checked>
+            <div>
+              <strong>🏆 Официален симулиран изпит (60 въпроса - 80% за преминаване)</strong>
+              <div style="font-size: 0.85rem; color: #666;">28 от Раздел 1, 13 от Раздел 2, 19 от Раздел 3</div>
+            </div>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="mode" value="razdel_1">
+            <div>
+              <strong>📘 Раздел 1: Електротехника и радиотехника</strong>
+              <div style="font-size: 0.85rem; color: #666;">Всички 111 въпроса от Раздел 1</div>
+            </div>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="mode" value="razdel_2">
+            <div>
+              <strong>📗 Раздел 2: Кодове, правила и процедури</strong>
+              <div style="font-size: 0.85rem; color: #666;">Всички 53 въпроса от Раздел 2</div>
+            </div>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="mode" value="razdel_3">
+            <div>
+              <strong>📙 Раздел 3: Нормативна уредба</strong>
+              <div style="font-size: 0.85rem; color: #666;">Всички 73 въпроса от Раздел 3</div>
+            </div>
+          </label>
+          <label class="mode-option">
+            <input type="radio" name="mode" value="all">
+            <div>
+              <strong>📚 Пълен конспект (Всички 237 въпроса)</strong>
+              <div style="font-size: 0.85rem; color: #666;">Всички налични въпроси</div>
+            </div>
+          </label>
+        </div>
+
+        <button class="btn btn-success" style="width: 100%; justify-content: center; padding: 1rem; font-size: 1.1rem;" onclick="startTest()">🚀 Започни теста</button>
+      </div>
+    `;
+    document.getElementById('app').innerHTML = html;
+
+    document.querySelectorAll('.mode-option').forEach(el => {
+      el.addEventListener('click', () => {
+        document.querySelectorAll('.mode-option').forEach(m => m.classList.remove('selected'));
+        el.classList.add('selected');
+        el.querySelector('input').checked = true;
+      });
+    });
+  }
+
+  function prepareQuestion(q) {
+    const qCopy = JSON.parse(JSON.stringify(q));
+    const keepOriginalOrder = (
+      (qCopy.razdel === 2 && [24, 25, 45, 53].includes(qCopy.q_num)) ||
+      (qCopy.razdel === 3 && [3, 23, 49, 63, 67].includes(qCopy.q_num))
+    );
+    if (!keepOriginalOrder && !qCopy.has_image && qCopy.options) {
+      const keys = ['А', 'Б', 'В', 'Г'].filter(k => qCopy.options[k] !== undefined);
+      const vals = keys.map(k => qCopy.options[k]);
+      const correctVal = qCopy.options[qCopy.correct_answer];
+
+      const shuffledVals = shuffle([...vals]);
+
+      const newOptions = {};
+      let newCorrectAns = qCopy.correct_answer;
+      keys.forEach((k, i) => {
+        newOptions[k] = shuffledVals[i];
+        if (shuffledVals[i] === correctVal) {
+          newCorrectAns = k;
+        }
+      });
+      qCopy.options = newOptions;
+      qCopy.correct_answer = newCorrectAns;
+    }
+    return qCopy;
+  }
+
+  function startTest() {
+    const selectedMode = document.querySelector('input[name="mode"]:checked').value;
+    userAnswers = {};
+    flaggedQuestions.clear();
+    currentIndex = 0;
+    secondsElapsed = 0;
+    isReviewMode = false;
+    reviewOnlyWrong = false;
+    reviewIndices = [];
+    reviewPos = 0;
+
+    let selected = [];
+    if (selectedMode === 'official_60') {
+      const r1 = shuffle([...questionsData.filter(q => q.razdel === 1)]).slice(0, 28);
+      const r2 = shuffle([...questionsData.filter(q => q.razdel === 2)]).slice(0, 13);
+      const r3 = shuffle([...questionsData.filter(q => q.razdel === 3)]).slice(0, 19);
+      selected = shuffle([...r1, ...r2, ...r3]);
+    } else if (selectedMode === 'razdel_1') {
+      selected = shuffle([...questionsData.filter(q => q.razdel === 1)]);
+    } else if (selectedMode === 'razdel_2') {
+      selected = shuffle([...questionsData.filter(q => q.razdel === 2)]);
+    } else if (selectedMode === 'razdel_3') {
+      selected = shuffle([...questionsData.filter(q => q.razdel === 3)]);
+    } else {
+      selected = shuffle([...questionsData]);
+    }
+    testQuestions = selected.map(q => prepareQuestion(q));
+
+    document.getElementById('timer-display').style.display = 'inline';
+    startTimer();
+    renderQuestionScreen();
+  }
+
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    timerInterval = setInterval(() => {
+      secondsElapsed++;
+      const m = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+      const s = String(secondsElapsed % 60).padStart(2, '0');
+      document.getElementById('timer-display').innerText = `⏱ ${m}:${s}`;
+    }, 1000);
+  }
+
+  function renderQuestionScreen() {
+    const q = testQuestions[currentIndex];
+    const total = testQuestions.length;
+    const isFlagged = flaggedQuestions.has(currentIndex);
+    const selectedAnswer = userAnswers[currentIndex];
+
+    let progressText = `Въпрос ${currentIndex + 1} от ${total}`;
+    if (isReviewMode && reviewOnlyWrong) {
+      progressText = `Грешен въпрос ${reviewPos + 1} от ${reviewIndices.length} (№${currentIndex + 1})`;
+    }
+
+    let imageHtml = '';
+    if (q.has_image && q.image_path) {
+      imageHtml = `<img src="${q.image_path}" class="q-img" alt="Схема към въпроса">`;
+    }
+
+    const questionTextHtml = q.has_image ? '' : `<div class="q-text">${currentIndex + 1}. ${q.question}</div>`;
+    let optionsHtml = '';
+    const keys = ['А', 'Б', 'В', 'Г'];
+    keys.forEach(k => {
+      if (q.options && q.options[k]) {
+        let extraClass = '';
+        let prefix = '';
+        if (isReviewMode) {
+          if (k === q.correct_answer) { extraClass = 'correct'; prefix = '✔ '; }
+          else if (k === selectedAnswer && selectedAnswer !== q.correct_answer) { extraClass = 'wrong'; prefix = '✖ '; }
+        } else if (k === selectedAnswer) {
+          extraClass = 'selected';
+        }
+
+        optionsHtml += `
+          <label class="option-item ${extraClass}">
+            <input type="radio" name="answer" value="${k}" ${selectedAnswer === k ? 'checked' : ''} ${isReviewMode ? 'disabled' : ''} onchange="selectOption('${k}')">
+            <span><strong>${prefix}${k}.</strong> ${q.options[k]}</span>
+          </label>
+        `;
+      } else if (q.has_image) {
+        let extraClass = '';
+        if (isReviewMode) {
+          if (k === q.correct_answer) extraClass = 'correct';
+          else if (k === selectedAnswer && selectedAnswer !== q.correct_answer) extraClass = 'wrong';
+        } else if (k === selectedAnswer) extraClass = 'selected';
+
+        optionsHtml += `
+          <label class="option-item ${extraClass}">
+            <input type="radio" name="answer" value="${k}" ${selectedAnswer === k ? 'checked' : ''} ${isReviewMode ? 'disabled' : ''} onchange="selectOption('${k}')">
+            <span><strong>Символ ${k}</strong></span>
+          </label>
+        `;
+      }
+    });
+
+    const isPrevDisabled = (isReviewMode && reviewOnlyWrong) ? (reviewPos === 0) : (currentIndex === 0);
+    const isLast = (isReviewMode && reviewOnlyWrong) ? (reviewPos === reviewIndices.length - 1) : (currentIndex === total - 1);
+
+    let nextBtnHtml = '';
+    if (isReviewMode) {
+      if (isLast) {
+        nextBtnHtml = `<button class="btn btn-success" onclick="showResults()">Затвори прегледа 🏁</button>`;
+      } else {
+        nextBtnHtml = `<button class="btn" onclick="nextQuestion()">Следващ ►</button>`;
+      }
+    } else {
+      if (isLast) {
+        nextBtnHtml = `<button class="btn btn-success" onclick="confirmSubmit()">Предай теста 🏁</button>`;
+      } else {
+        nextBtnHtml = `<button class="btn" onclick="nextQuestion()">Следващ ►</button>`;
+      }
+    }
+
+    const html = `
+      <div class="card">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+          <span class="q-badge">📌 ${q.razdel_title} — Въпрос №${q.q_num}</span>
+          <span style="font-weight:bold; color:var(--primary);">${progressText}</span>
+        </div>
+
+        ${questionTextHtml}
+        ${imageHtml}
+
+        <div class="options">
+          ${optionsHtml}
+        </div>
+
+        <div class="nav-bar">
+          <div>
+            <button class="btn btn-outline" onclick="prevQuestion()" ${isPrevDisabled ? 'disabled style="opacity:0.5;"' : ''}>◄ Предишен</button>
+            <button class="btn btn-outline" onclick="toggleFlag()">${isFlagged ? '🚩 Маркиран' : '🏳 Маркирай'}</button>
+            <button class="btn btn-outline" onclick="openModal()">📊 Карта</button>
+          </div>
+          <div>
+            ${nextBtnHtml}
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('app').innerHTML = html;
+  }
+
+  function selectOption(key) {
+    if (isReviewMode) return;
+    userAnswers[currentIndex] = key;
+    renderQuestionScreen();
+  }
+
+  function prevQuestion() {
+    if (isReviewMode && reviewOnlyWrong) {
+      if (reviewPos > 0) {
+        reviewPos--;
+        currentIndex = reviewIndices[reviewPos];
+        renderQuestionScreen();
+      }
+    } else {
+      if (currentIndex > 0) { currentIndex--; renderQuestionScreen(); }
+    }
+  }
+
+  function nextQuestion() {
+    if (isReviewMode && reviewOnlyWrong) {
+      if (reviewPos < reviewIndices.length - 1) {
+        reviewPos++;
+        currentIndex = reviewIndices[reviewPos];
+        renderQuestionScreen();
+      } else {
+        showResults();
+      }
+    } else if (isReviewMode) {
+      if (currentIndex < testQuestions.length - 1) {
+        currentIndex++;
+        renderQuestionScreen();
+      } else {
+        showResults();
+      }
+    } else {
+      if (currentIndex < testQuestions.length - 1) {
+        currentIndex++;
+        renderQuestionScreen();
+      } else {
+        confirmSubmit();
+      }
+    }
+  }
+
+  function toggleFlag() {
+    if (flaggedQuestions.has(currentIndex)) flaggedQuestions.delete(currentIndex);
+    else flaggedQuestions.add(currentIndex);
+    renderQuestionScreen();
+  }
+
+  function openModal() {
+    const grid = document.getElementById('grid-boxes');
+    grid.innerHTML = '';
+    const indicesToShow = (isReviewMode && reviewOnlyWrong) ? reviewIndices : testQuestions.map((_, i) => i);
+
+    indicesToShow.forEach((idx) => {
+      const btn = document.createElement('div');
+      btn.className = 'grid-btn';
+      if (isReviewMode) {
+        if (userAnswers[idx] === testQuestions[idx].correct_answer) {
+          btn.style.background = 'var(--success)';
+          btn.style.color = 'white';
+        } else if (userAnswers[idx] !== undefined) {
+          btn.style.background = 'var(--danger)';
+          btn.style.color = 'white';
+        } else {
+          btn.style.background = '#7F8C8D';
+          btn.style.color = 'white';
+        }
+      } else {
+        if (userAnswers[idx]) btn.classList.add('answered');
+        if (flaggedQuestions.has(idx)) btn.classList.add('flagged');
+      }
+      if (idx === currentIndex) btn.classList.add('current');
+      btn.innerText = idx + 1;
+      btn.onclick = () => {
+        currentIndex = idx;
+        if (isReviewMode && reviewOnlyWrong) {
+          reviewPos = reviewIndices.indexOf(idx);
+        }
+        closeModal();
+        renderQuestionScreen();
+      };
+      grid.appendChild(btn);
+    });
+    document.getElementById('grid-modal').style.display = 'flex';
+  }
+
+  function closeModal() {
+    document.getElementById('grid-modal').style.display = 'none';
+  }
+
+  function confirmSubmit() {
+    if (isReviewMode) { renderMainMenu(); return; }
+    const unanswered = testQuestions.length - Object.keys(userAnswers).length;
+    let msg = "Сигурни ли сте, че искате да предадете теста?";
+    if (unanswered > 0) msg = `Имате ${unanswered} неотговорени въпроса!\n` + msg;
+    if (confirm(msg)) {
+      clearInterval(timerInterval);
+      showResults();
+    }
+  }
+
+  function showResults() {
+    const total = testQuestions.length;
+    let correct = 0;
+    testQuestions.forEach((q, idx) => {
+      if (userAnswers[idx] === q.correct_answer) correct++;
+    });
+
+    const pct = ((correct / total) * 100).toFixed(1);
+    const passed = pct >= 80.0;
+
+    const m = String(Math.floor(secondsElapsed / 60)).padStart(2, '0');
+    const s = String(secondsElapsed % 60).padStart(2, '0');
+
+    const html = `
+      <div class="results-banner ${passed ? 'pass' : 'fail'}">
+        <h2>${passed ? '🎉 ПОЛОЖЕН ИЗПИТ! (PASS)' : '❌ НЕПОЛОЖЕН ИЗПИТ (FAIL)'}</h2>
+        <p>Резултат: <strong>${correct}</strong> от <strong>${total}</strong> верни отговора (<strong>${pct}%</strong>)</p>
+      </div>
+
+      <div class="card">
+        <h3>📊 Статистика от теста</h3>
+        <ul style="margin: 1rem 0 1.5rem 1.5rem; line-height: 1.8;">
+          <li>Верни отговори: <strong>${correct}</strong></li>
+          <li>Грешни отговори: <strong>${Object.keys(userAnswers).length - correct}</strong></li>
+          <li>Неотговорени: <strong>${total - Object.keys(userAnswers).length}</strong></li>
+          <li>Време за решаване: <strong>${m}:${s}</strong></li>
+          <li>Изискване за преминаване: <strong>80.0% (минимум ${Math.ceil(total * 0.8)} от ${total})</strong></li>
+        </ul>
+
+        <div style="display: flex; gap: 0.8rem; flex-wrap: wrap;">
+          <button class="btn btn-outline" onclick="enterReviewMode(false)">🔍 Преглед на всички въпроси</button>
+          <button class="btn btn-outline" style="border-color: var(--danger); color: var(--danger);" onclick="enterReviewMode(true)">❌ Преглед само на грешките</button>
+          <button class="btn btn-success" onclick="renderMainMenu()">🔄 Нов тест</button>
+        </div>
+      </div>
+    `;
+
+    document.getElementById('app').innerHTML = html;
+  }
+
+  function enterReviewMode(onlyWrong = false) {
+    if (onlyWrong) {
+      const wrong = testQuestions
+        .map((q, idx) => ({ q, idx }))
+        .filter(item => userAnswers[item.idx] !== item.q.correct_answer)
+        .map(item => item.idx);
+
+      if (wrong.length === 0) {
+        alert("Поздравления! Нямате сбъркани въпроси.");
+        return;
+      }
+      isReviewMode = true;
+      reviewOnlyWrong = true;
+      reviewIndices = wrong;
+      reviewPos = 0;
+      currentIndex = reviewIndices[0];
+    } else {
+      isReviewMode = true;
+      reviewOnlyWrong = false;
+      reviewIndices = testQuestions.map((_, i) => i);
+      reviewPos = 0;
+      currentIndex = 0;
+    }
+    renderQuestionScreen();
+  }
+
+  window.onload = init;
+</script>
+</body>
+</html>
