@@ -31,18 +31,6 @@ The launcher starts the app from the project folder, so it can also be invoked f
 
 ## Question Data
 
-The quiz runs from the generated question banks and figure crops in `class2/`; the source PDFs are not needed at runtime. `extract_questions.py` is optional and only needed to regenerate the question banks and crops. Place authorized source PDFs in `class2/` before running it:
-
-```powershell
-python extract_questions.py
-```
-
-PDFs are excluded from Git by `.gitignore` because they contain answer keys and may have distribution restrictions.
+The generated question banks and figure crops are included under `class2/`. The source PDFs and extraction script are kept out of Git; the PDFs contain answer keys and may have distribution restrictions.
 
 The simulated exam selects 60 questions: 28 from Section 1, 13 from Section 2, and 19 from Section 3. Passing requires at least 48 correct answers (80%).
-
-## GitHub Visibility
-
-`class2/questions.json` contains the correct answers, and the local web API currently sends that file to the browser for scoring. The source PDFs also include answer keys. **Do not publish this repository publicly if those answers should remain private.** Use a private repository or remove the answer-bearing data and revise the app's scoring/data flow before making it public.
-
-The PDFs may also have distribution or copyright restrictions; verify permission before uploading them.
